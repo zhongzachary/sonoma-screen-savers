@@ -1,15 +1,18 @@
 # sonoma-screen-savers
-All the aerial screen savers from macOS Sonoma, with links to apple.com.
+All the aerial screen savers from macOS Sonoma.
 
-Feel free to click through each before downloading them (as they can take a large amount of storage, totaling over 50GB).
+Feel free to click through each before downloading them in your System Settings (as they can take a large amount of storage, totaling over 50GB).
 
-Links to each of the categories:
+
+Unfortunately, the preview images can't be rendered in Github, but I prepare a [Google Sheets](https://docs.google.com/spreadsheets/d/1ZjkPVrAUfrg8AuqnCbIfQ52EA-IQIe01h7I1On7-E8k/edit?usp=sharing) that can render those images directly.
+
+Alternative, you can use the following links to access the preview images and the full videos for all aerial screen savers in macOS Sonoma:
 - [Landscape](#landscape)
 - [Cityscape](#cityscape)
 - [Underwater](#underwater)
 - [Earth](#earth)
 
-Unfortunately, Github can't render the preview images from apple.com's links, so you will have to click through each of them.
+(It goes without saying that all the photos and videos are own by Apple and I don't store any of these photos or videos except when using as my Mac's desktop pictures and screen savers. The following tables and the accompanied Google Sheets only contain the links to these assets that are stored in Apple's server.)
 
 ## Landscape
 | Name                        | Asset ID                             | Preview Image                                                                                                                                                                                    | Full Video                                                                                                                                                                                                                    |
