@@ -7,6 +7,7 @@ import aiohttp
 import aiofiles
 import json
 import pandas
+import warnings
 
 # read the entries.json from system
 # if you are not running macOS Sonoma, you can use `data/entries.json`
@@ -15,7 +16,7 @@ ORIGINAL_ENTRIES_PATH = '/Library/Application Support/com.apple.idleassetsd/Cust
 with open(ORIGINAL_ENTRIES_PATH, 'r') as f:
     ENTRIES = json.load(f)
 
-DISPLAY_NAMES =  pandas.read_csv('data/display_names.csv').set_index('assetId')
+DISPLAY_NAMES =  pandas.read_csv('data/display_names.csv').reset_index(names='orderId').set_index('assetId')
 
 ASSET_URLS = pandas.DataFrame.from_dict(
         dict(
@@ -28,6 +29,9 @@ ASSET_URLS = pandas.DataFrame.from_dict(
     .set_index('assetId')
 
 NAMES_AND_URLS = DISPLAY_NAMES.join(ASSET_URLS)
+
+if len(ASSET_URLS) > len(DISPLAY_NAMES):
+    warnings.warn(f'There are {len(ASSET_URLS)} assets but only {len(DISPLAY_NAMES)} display names. Some assets will be missing from output.')
 
 
 async def download(session: aiohttp.ClientSession, 
@@ -105,7 +109,7 @@ def save_screen_savers_url_as_markdown():
 
 if __name__ == "__main__":
     # download all preview images
-    # asyncio.run(download_all(NAMES_AND_URLS['previewImage'], 'preview_images'))
+    asyncio.run(download_all(NAMES_AND_URLS['previewImage'], 'preview_images'))
 
     # create a README file
     save_screen_savers_url_as_markdown()
