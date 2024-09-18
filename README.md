@@ -1,6 +1,6 @@
-# macOS Sonoma Screen Savers
+# macOS Screen Savers
 
-Here is a list of all the screen savers from macOS Sonoma.
+Here is a list of all the screen savers from macOS Sonoma & Sequoia.
 
 Feel free to click through each link to watch them in browser first before downloading them in your System Settings (as they can take a large amount of storage, totaling over 50GB).
 
