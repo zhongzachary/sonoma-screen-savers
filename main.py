@@ -97,7 +97,7 @@ def save_screen_savers_url_as_markdown():
         group_by_category = table.groupby('Category', sort=False)
 
         for category in group_by_category.groups.keys():
-            f.write(f'- [{category}]({category.lower()})\n')
+            f.write(f'- [{category}](#{category.lower()})\n')
         
         f.write('\n')
 
