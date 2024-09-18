@@ -7,10 +7,10 @@ Feel free to click through each link to watch them in browser first before downl
 Disclaimer: All the photos and videos are owned by Apple Inc. and their respective creators/owners. This repository is for helping users to explore these screen savers online. While the screen saver's preview images are stored for viewing purposes, this repository only provides links to Apple servers for viewing the full videos.
 
 Table of content:
-- [Landscape](landscape)
-- [Cityscape](cityscape)
-- [Underwater](underwater)
-- [Earth](earth)
+- [Landscape](#landscape)
+- [Cityscape](#cityscape)
+- [Underwater](#underwater)
+- [Earth](#earth)
 
 ## Landscape
 
