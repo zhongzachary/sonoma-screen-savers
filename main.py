@@ -12,7 +12,7 @@ LOCALIZATIONS = duckdb.read_json("./data/localizations.json")
 ASSETS = ENTRIES.query(
     "entries",
     """
-    SELECT asset.*
+    SELECT asset.* replace(upper(cast(asset.id as string)) as id)
     FROM (
         SELECT unnest(assets) AS asset
         FROM entries
@@ -189,7 +189,7 @@ def save_screen_savers_url_as_markdown():
                 (
                     subcategory,
                     name + (f" - {orientation}" if orientation else ""),
-                    f"![{name}](preview_images/{asset_id}.png)",
+                    f"![{name}](preview_images/{asset_id.upper()}.png)",
                     f"[Link]({full_video})",
                 )
                 for asset_id, name, subcategory, full_video, orientation in table.filter(
