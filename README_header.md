@@ -1,6 +1,6 @@
-# macOS Screen Savers
+# macOS Wallpapers
 
-Here is a list of all the screen savers from macOS Sonoma & macOS Sequoia.
+Here is a list of the aerial wallpapers from macOS Sonoma to macOS Golden Gate.
 
 Feel free to click through each link to watch them in browser first before downloading them in your System Settings (as they can take a large amount of storage, totaling over 50GB).
 

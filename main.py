@@ -1,115 +1,225 @@
-"""
-This code will (asynchronously) download all the preview images and generate a README.md that
-  contains a link to all the screen savers video.
-"""
 import asyncio
-import aiohttp
+import pathlib
+
 import aiofiles
-import json
-import pandas
-import warnings
+import aiohttp
+import duckdb
+from tabulate import tabulate
 
-# read the entries.json from system
-# if you are not running macOS Sonoma, you can use `data/entries.json`
-ORIGINAL_ENTRIES_PATH = '/Library/Application Support/com.apple.idleassetsd/Customer/entries.json'
+LANG = "en"
+ENTRIES = duckdb.read_json("./data/entries.json")
+LOCALIZATIONS = duckdb.read_json("./data/localizations.json")
+ASSETS = ENTRIES.query(
+    "entries",
+    """
+    SELECT asset.*
+    FROM (
+        SELECT unnest(assets) AS asset
+        FROM entries
+    );
+    """,
+)
+CATEGORIES = ENTRIES.query(
+    "entries",
+    """
+    SELECT category.*
+    FROM (
+        SELECT unnest(categories) AS category
+        FROM entries
+    );
+    """,
+)
 
-with open(ORIGINAL_ENTRIES_PATH, 'r') as f:
-    ENTRIES = json.load(f)
 
-DISPLAY_NAMES =  pandas.read_csv('data/display_names.csv').reset_index(names='orderId').set_index('assetId')
-
-ASSET_URLS = pandas.DataFrame.from_dict(
-        dict(
-            assetId=asset['id'], 
-            previewImage=asset['previewImage'], 
-            fullVideo=asset['url-4K-SDR-240FPS']
-        )
-        for asset in ENTRIES['assets']
-    )\
-    .set_index('assetId')
-
-NAMES_AND_URLS = DISPLAY_NAMES.join(ASSET_URLS)
-
-if len(ASSET_URLS) > len(DISPLAY_NAMES):
-    warnings.warn(f'There are {len(ASSET_URLS)} assets but only {len(DISPLAY_NAMES)} display names. Some assets will be missing from output.')
-
-
-async def download(session: aiohttp.ClientSession, 
-                   url: str, 
-                   filename:str):
+async def download(session: aiohttp.ClientSession, url: str, filename: str):
     """
     Download content from the given URL into the file.
     """
-    async with session.get(url, verify_ssl=False) as response:
-        async with aiofiles.open(filename, mode='wb') as f:
+    async with session.get(url, ssl=False) as response:
+        async with aiofiles.open(filename, mode="wb") as f:
             await f.write(await response.read())
 
 
-async def download_all(urls: pandas.Series, folder:str):
+async def download_all(
+    table: duckdb.DuckDBPyRelation,
+    url_field: str,
+    output_file_name_field: str,
+    output_folder: str,
+):
     """
-    Download from a Series of URLs to the given folder.
-    
-    The keys of the series will be used as the file name.
+    Download URLs from a DuckDB table.
 
-    e.g. To download all preview images into a folder called "preview_images", use
-    ```
-    asyncio.run(download_all(NAMES_AND_URLS['previewImage'], 'preview_images'))
-    ```
+    `output_file_name_field` determines the downloaded file name.
     """
+    pathlib.Path(output_folder).mkdir(parents=True, exist_ok=True)
+
+    rows = table.query(
+        "assets",
+        f"""
+        SELECT "{output_file_name_field}", "{url_field}"
+        FROM assets
+        WHERE "{url_field}" IS NOT NULL
+        """,
+    ).fetchall()
+
     async with aiohttp.ClientSession() as session:
         tasks = [
-            asyncio.ensure_future(
-                download(session, url, f'{folder}/{name}.{url.split(".")[-1]}')
+            download(
+                session,
+                url,
+                f"{output_folder}/{filename}.{url.split('.')[-1].split('?')[0]}",
             )
-            for name, url in urls.items()
+            for filename, url in rows
         ]
+
         await asyncio.gather(*tasks)
 
 
-def save_screen_savers_url_as_markdown():
-    # extract fields needed
-    table = NAMES_AND_URLS.reset_index(drop=False)\
-        [['name', 'category', 'previewImage', 'fullVideo', 'assetId']]\
-        .set_index('name')
+def summarize_assets_for_markdown(lang=LANG) -> duckdb.DuckDBPyRelation:
 
-    # convert preview image into Markdown images
-    table['previewImage'] = table.apply(
-        lambda row: f'![{row.name}](preview_images/{row.assetId}.png)', 
-        axis=1
+    localized_names = (
+        LOCALIZATIONS.filter(duckdb.col("language") == lang)
+        .unnest("localizedNames")
+        .unnest("localizedNames")
+        .select("key", "value")
     )
-    
-    # convert full video into Markdown links
-    table['fullVideo'] = table['fullVideo'].apply(
-        lambda url: f'[Link]({url})'
+    assert len(localized_names) > 0, f"Language '{lang}' not supported"
+
+    assets_w_names = (
+        ASSETS.select(
+            "id",
+            "localizedNameKey",
+            "previewImage",
+            "url-4K-SDR-240FPS",
+            "categories",
+            "subcategories",
+            "preferredOrder",
+            duckdb.col("variant", "orientation").alias("orientation"),
+        )
+        .unnest("categories")
+        .unnest("subcategories")
+        .rename(categories="categoryId", subcategories="subcategoryId")
+        .join(
+            localized_names.rename(key="localizedNameKey", value="localizedNameValue"),
+            condition=["localizedNameKey"],
+            how="left",
+        )
     )
-    
-    # change column names for Markdown
-    table = table.drop('assetId', axis=1)
-    table.index.name = 'Name'
-    table.columns = ['Category', 'Preview Image', 'Full Video']
-    
-    # save to "table.md" by category
-    with open('README.md', 'w') as f:
+    categories_w_names = (
+        CATEGORIES.unnest("subcategories")
+        .rename(subcategories="subcategory")
+        .select(
+            duckdb.col("id").alias("categoryId"),
+            duckdb.col("localizedNameKey").alias("categoryLocalizedNameKey"),
+            duckdb.col("preferredOrder").alias("categoryPreferredOrder"),
+            duckdb.col("subcategory", "id").alias("subcategoryId"),
+            duckdb.col("subcategory", "localizedNameKey").alias(
+                "subcategoryLocalizedNameKey"
+            ),
+            duckdb.col("subcategory", "preferredOrder").alias(
+                "subcategoryPreferredOrder"
+            ),
+        )
+        .join(
+            localized_names.rename(
+                key="categoryLocalizedNameKey", value="categoryLocalizedNameValue"
+            ),
+            condition=["categoryLocalizedNameKey"],
+            how="left",
+        )
+        .join(
+            localized_names.rename(
+                key="subcategoryLocalizedNameKey", value="subcategoryLocalizedNameValue"
+            ),
+            condition=["subcategoryLocalizedNameKey"],
+            how="left",
+        )
+    )
+    assets_w_categories = (
+        assets_w_names.join(
+            categories_w_names, condition=["categoryId", "subcategoryId"], how="left"
+        )
+        .query(
+            "t",
+            """
+            select
+              t.*,
+              row_number() over (order by categoryPreferredOrder, subcategoryPreferredOrder, preferredOrder) as assetOrder
+            from t""",
+        )
+        .select(
+            duckdb.col("id").alias("assetId"),
+            "previewImage",
+            duckdb.col("url-4K-SDR-240FPS").alias("fullVideo"),
+            duckdb.col("localizedNameValue").alias("name"),
+            duckdb.col("categoryLocalizedNameValue").alias("category"),
+            duckdb.col("subcategoryLocalizedNameValue").alias("subcategory"),
+            "orientation",
+            "assetOrder",
+        )
+    )
+    return assets_w_categories
+
+
+def save_screen_savers_url_as_markdown():
+    table = summarize_assets_for_markdown()
+    categories = [
+        category
+        for category, _ in table.group_by("category")
+        .agg("min(assetOrder) as categoryOrder")
+        .order("categoryOrder")
+        .fetchall()
+    ]
+
+    # save to README.md by category
+    with open("README.md", "w") as f:
         # add header
-        with open('README_header.md') as header:
+        with open("README_header.md") as header:
             f.write(header.read())
 
-        group_by_category = table.groupby('Category', sort=False)
+        for category in categories:
+            anchor = category.lower().replace(" ", "-")
+            f.write(f"- [{category}](#{anchor})\n")
 
-        for category in group_by_category.groups.keys():
-            f.write(f'- [{category}](#{category.lower()})\n')
-        
-        f.write('\n')
+        f.write("\n")
 
-        for category, category_table in group_by_category:
-            f.write(f'## {category}\n\n')
-            f.write(category_table.drop('Category', axis=1).to_markdown())
-            f.write('\n')
+        for category in categories:
+            f.write(f"## {category}\n\n")
+            formatted_list = [
+                (
+                    subcategory,
+                    name + (f" - {orientation}" if orientation else ""),
+                    f"![{name}](preview_images/{asset_id}.png)",
+                    f"[Link]({full_video})",
+                )
+                for asset_id, name, subcategory, full_video, orientation in table.filter(
+                    duckdb.col("category") == category
+                )
+                .select("assetId", "name", "subcategory", "fullVideo", "orientation")
+                .fetchall()
+            ]
+            f.write(
+                tabulate(
+                    formatted_list,
+                    headers=("Subcategory", "Name", "Preview Image", "Full Video"),
+                    tablefmt="pipe",
+                )
+            )
+            f.write("\n")
+
+
+def main():
+    asyncio.run(
+        download_all(
+            ASSETS,
+            url_field="previewImage",
+            output_file_name_field="id",
+            output_folder="preview_images",
+        )
+    )
+
+    save_screen_savers_url_as_markdown()
 
 
 if __name__ == "__main__":
-    # download all preview images
-    asyncio.run(download_all(NAMES_AND_URLS['previewImage'], 'preview_images'))
-
-    # create a README file
-    save_screen_savers_url_as_markdown()
+    main()
