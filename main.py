@@ -12,7 +12,7 @@ LOCALIZATIONS = duckdb.read_json("./data/localizations.json")
 ASSETS = ENTRIES.query(
     "entries",
     """
-    SELECT asset.*
+    SELECT asset.* replace(upper(cast(asset.id as string)) as id)
     FROM (
         SELECT unnest(assets) AS asset
         FROM entries
@@ -148,7 +148,7 @@ def summarize_assets_for_markdown(lang=LANG) -> duckdb.DuckDBPyRelation:
             from t""",
         )
         .select(
-            duckdb.col("id").cast('string').str().upper().alias("assetId"),
+            duckdb.col("id").alias("assetId"),
             "previewImage",
             duckdb.col("url-4K-SDR-240FPS").alias("fullVideo"),
             duckdb.col("localizedNameValue").alias("name"),
