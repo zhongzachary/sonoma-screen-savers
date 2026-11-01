@@ -10,3 +10,9 @@ The localized string file is stored in
 Run collect_data.py will:
 - copy the `entries.json` into this folder, and
 - parse the `.loctable` file and save as `localizations.json`.
+
+To refresh the data, run the following in the project directory
+
+```zsh
+uv run data/collect_data.py
+```
