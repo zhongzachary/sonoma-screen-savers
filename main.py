@@ -148,7 +148,7 @@ def summarize_assets_for_markdown(lang=LANG) -> duckdb.DuckDBPyRelation:
             from t""",
         )
         .select(
-            duckdb.col("id").alias("assetId"),
+            duckdb.col("id").cast('string').str().upper().alias("assetId"),
             "previewImage",
             duckdb.col("url-4K-SDR-240FPS").alias("fullVideo"),
             duckdb.col("localizedNameValue").alias("name"),
@@ -189,7 +189,7 @@ def save_screen_savers_url_as_markdown():
                 (
                     subcategory,
                     name + (f" - {orientation}" if orientation else ""),
-                    f"![{name}](preview_images/{asset_id}.png)",
+                    f"![{name}](preview_images/{asset_id.upper()}.png)",
                     f"[Link]({full_video})",
                 )
                 for asset_id, name, subcategory, full_video, orientation in table.filter(
