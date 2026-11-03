@@ -1,14 +1,15 @@
 import asyncio
+import json
 import pathlib
 
 import aiofiles
 import aiohttp
 import duckdb
+import pyarrow as pa
 from tabulate import tabulate
 
 LANG = "en"
 ENTRIES = duckdb.read_json("./data/entries.json")
-LOCALIZATIONS = duckdb.read_json("./data/localizations.json")
 ASSETS = ENTRIES.query(
     "entries",
     """
@@ -76,12 +77,10 @@ async def download_all(
 
 
 def summarize_assets_for_markdown(lang=LANG) -> duckdb.DuckDBPyRelation:
-
-    localized_names = (
-        LOCALIZATIONS.filter(duckdb.col("language") == lang)
-        .unnest("localizedNames")
-        .unnest("localizedNames")
-        .select("key", "value")
+    with pathlib.Path(f"./data/locales/{lang}.json").open(encoding="utf-8") as f:
+        translations = json.load(f)
+    localized_names = duckdb.from_arrow(
+        pa.table({"key": list(translations), "value": list(translations.values())})
     )
     assert len(localized_names) > 0, f"Language '{lang}' not supported"
 
