@@ -1,35 +1,11 @@
+import argparse
 import asyncio
-import json
 import pathlib
 
 import aiofiles
 import aiohttp
 import duckdb
-import pyarrow as pa
 from tabulate import tabulate
-
-LANG = "en"
-ENTRIES = duckdb.read_json("./data/entries.json")
-ASSETS = ENTRIES.query(
-    "entries",
-    """
-    SELECT asset.* replace(upper(cast(asset.id as string)) as id)
-    FROM (
-        SELECT unnest(assets) AS asset
-        FROM entries
-    );
-    """,
-)
-CATEGORIES = ENTRIES.query(
-    "entries",
-    """
-    SELECT category.*
-    FROM (
-        SELECT unnest(categories) AS category
-        FROM entries
-    );
-    """,
-)
 
 
 async def download(session: aiohttp.ClientSession, url: str, filename: str):
@@ -76,16 +52,40 @@ async def download_all(
         await asyncio.gather(*tasks)
 
 
-def summarize_assets_for_markdown(lang=LANG) -> duckdb.DuckDBPyRelation:
-    with pathlib.Path(f"./data/locales/{lang}.json").open(encoding="utf-8") as f:
-        translations = json.load(f)
-    localized_names = duckdb.from_arrow(
-        pa.table({"key": list(translations), "value": list(translations.values())})
+def summarize_assets_for_markdown(lang: str) -> duckdb.DuckDBPyRelation:
+    entries = duckdb.read_json("./data/entries.json")
+    assets = entries.query(
+        "entries",
+        """
+        SELECT asset.*
+        FROM (
+            SELECT unnest(assets) AS asset
+            FROM entries
+        );
+        """,
     )
-    assert len(localized_names) > 0, f"Language '{lang}' not supported"
+    categories = entries.query(
+        "entries",
+        """
+        SELECT category.*
+        FROM (
+            SELECT unnest(categories) AS category
+            FROM entries
+        );
+        """,
+    )
+
+    localized_names = (
+        duckdb.read_json("data/locales/en.json")
+        .select(
+            "locale", duckdb.sql_expr("map_entries(localizedStrings)").alias("entries")
+        )
+        .unnest("entries")
+        .unnest("entries")
+    )
 
     assets_w_names = (
-        ASSETS.select(
+        assets.select(
             "id",
             "localizedNameKey",
             "previewImage",
@@ -104,8 +104,9 @@ def summarize_assets_for_markdown(lang=LANG) -> duckdb.DuckDBPyRelation:
             how="left",
         )
     )
+
     categories_w_names = (
-        CATEGORIES.unnest("subcategories")
+        categories.unnest("subcategories")
         .rename(subcategories="subcategory")
         .select(
             duckdb.col("id").alias("categoryId"),
@@ -134,6 +135,7 @@ def summarize_assets_for_markdown(lang=LANG) -> duckdb.DuckDBPyRelation:
             how="left",
         )
     )
+
     assets_w_categories = (
         assets_w_names.join(
             categories_w_names, condition=["categoryId", "subcategoryId"], how="left"
@@ -157,11 +159,11 @@ def summarize_assets_for_markdown(lang=LANG) -> duckdb.DuckDBPyRelation:
             "assetOrder",
         )
     )
+
     return assets_w_categories
 
 
-def save_screen_savers_url_as_markdown():
-    table = summarize_assets_for_markdown()
+def save_screen_savers_url_as_markdown(table: duckdb.DuckDBPyRelation):
     categories = [
         category
         for category, _ in table.group_by("category")
@@ -188,7 +190,7 @@ def save_screen_savers_url_as_markdown():
                 (
                     subcategory,
                     name + (f" - {orientation}" if orientation else ""),
-                    f"![{name}](preview_images/{asset_id.upper()}.png)",
+                    f"![{name}](preview_images/{asset_id}.png)",
                     f"[Link]({full_video})",
                 )
                 for asset_id, name, subcategory, full_video, orientation in table.filter(
@@ -204,20 +206,25 @@ def save_screen_savers_url_as_markdown():
                     tablefmt="pipe",
                 )
             )
-            f.write("\n")
+            f.write("\n\n")
 
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--lang", default="en", help="Localization language code")
+    args = parser.parse_args()
+
+    table = summarize_assets_for_markdown(args.lang)
     asyncio.run(
         download_all(
-            ASSETS,
+            table,
             url_field="previewImage",
-            output_file_name_field="id",
+            output_file_name_field="assetId",
             output_folder="preview_images",
         )
     )
 
-    save_screen_savers_url_as_markdown()
+    save_screen_savers_url_as_markdown(table)
 
 
 if __name__ == "__main__":
