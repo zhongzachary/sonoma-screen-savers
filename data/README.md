@@ -9,7 +9,9 @@ The localized string file is stored in
 
 Run collect_data.py will:
 - copy the `entries.json` into this folder, and
-- parse the `.loctable` file and save as `localizations.json`.
+- parse the `.loctable` file and save each language as `locales/<locale>.json`.
+  Each file contains the locale code and a `localizedStrings` object mapping
+  localization keys to their translated values.
 
 To refresh the data, run the following in the project directory
 

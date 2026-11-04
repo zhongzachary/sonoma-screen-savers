@@ -22,22 +22,27 @@ LOCTABLE_PATH = (
     / "TVIdleScreenStrings.bundle/Contents/Resources/Localizable.nocache.loctable"
 )
 
-OUTPUT_PATH = OUTPUT_DIR / "localizations.json"
+LOCALES_DIR = OUTPUT_DIR / "locales"
 
 with LOCTABLE_PATH.open("rb") as f:
-    LOCALIZATIONS = [
-        {
-            "language": language,
-            "localizedNames": [
-                {"key": key, "value": value} for key, value in localizedNames.items()
-            ],
-        }
-        for language, localizedNames in plistlib.load(f).items()
-        if language != "LocProvenance"
-    ]
+    LOCALIZATIONS = {
+        locale: localized_names
+        for locale, localized_names in plistlib.load(f).items()
+        if locale != "LocProvenance"
+    }
 
-
-with OUTPUT_PATH.open("w", encoding="utf-8") as f:
-    json.dump(LOCALIZATIONS, f, ensure_ascii=False, indent=2)
-
-print(f"Saved {OUTPUT_PATH.name} to {OUTPUT_PATH}")
+LOCALES_DIR.mkdir(parents=True, exist_ok=True)
+for locale, localized_names in LOCALIZATIONS.items():
+    normalized_locale = locale.replace("_", "-")
+    output_path = LOCALES_DIR / f"{normalized_locale}.json"
+    with output_path.open("w", encoding="utf-8") as f:
+        json.dump(
+            {
+                "locale": normalized_locale,
+                "localizedStrings": localized_names,
+            },
+            f,
+            ensure_ascii=False,
+            indent=2,
+        )
+    print(f"Saved {locale} to {output_path}")

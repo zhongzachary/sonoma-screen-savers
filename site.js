@@ -6,17 +6,17 @@ const languageNames = {
   de: "Deutsch",
   el: "Ελληνικά",
   en: "English",
-  en_AU: "English (Australia)",
-  en_CA: "English (Canada)",
-  en_GB: "English (United Kingdom)",
-  en_IN: "English (India)",
-  en_PH: "English (Philippines)",
+  "en-AU": "English (Australia)",
+  "en-CA": "English (Canada)",
+  "en-GB": "English (United Kingdom)",
+  "en-IN": "English (India)",
+  "en-PH": "English (Philippines)",
   es: "Español",
-  es_419: "Español (Latinoamérica)",
-  es_US: "Español (Estados Unidos)",
+  "es-419": "Español (Latinoamérica)",
+  "es-US": "Español (Estados Unidos)",
   fi: "Suomi",
   fr: "Français",
-  fr_CA: "Français (Canada)",
+  "fr-CA": "Français (Canada)",
   he: "עברית",
   hi: "हिन्दी",
   hr: "Hrvatski",
@@ -29,8 +29,8 @@ const languageNames = {
   nl: "Nederlands",
   no: "Norsk",
   pl: "Polski",
-  pt_BR: "Português (Brasil)",
-  pt_PT: "Português (Portugal)",
+  "pt-BR": "Português (Brasil)",
+  "pt-PT": "Português (Portugal)",
   ro: "Română",
   ru: "Русский",
   sk: "Slovenčina",
@@ -40,9 +40,9 @@ const languageNames = {
   tr: "Türkçe",
   uk: "Українська",
   vi: "Tiếng Việt",
-  zh_CN: "简体中文（中国大陆）",
-  zh_HK: "繁體中文（香港）",
-  zh_TW: "繁體中文（台灣）",
+  "zh-CN": "简体中文（中国大陆）",
+  "zh-HK": "繁體中文（香港）",
+  "zh-TW": "繁體中文（台灣）",
 };
 
 const languagePicker = document.getElementById("language");
@@ -113,21 +113,30 @@ function createWallpaper(asset, translate, language) {
 
 async function main() {
   try {
-    const [entries, localizations] = await Promise.all([
+    const [entries, english] = await Promise.all([
       readJSON("./data/entries.json"),
-      readJSON("./data/localizations.json"),
+      readJSON("./data/locales/en.json"),
     ]);
-    const translations = new Map(localizations.map(({ language, localizedNames }) => [
-      language,
-      new Map(localizedNames.map(({ key, value }) => [key, value])),
-    ]));
-    const languages = new Map([...translations.keys()].map((language) => [
+    const englishNames = new Map(Object.entries(english.localizedStrings));
+    const translations = new Map([["en", Promise.resolve(englishNames)]]);
+    const languages = new Map(Object.keys(languageNames).map((language) => [
       normalizeLanguage(language), language,
     ]));
     const categories = [...entries.categories].sort(byPreferredOrder);
     const assets = [...entries.assets].sort(byPreferredOrder);
+    let renderVersion = 0;
 
-    const options = [...translations.keys()]
+    function loadTranslations(language) {
+      if (!translations.has(language)) {
+        const pending = readJSON(`./data/locales/${language}.json`)
+          .then(({ localizedStrings }) => new Map(Object.entries(localizedStrings)));
+        translations.set(language, pending);
+        pending.catch(() => translations.delete(language));
+      }
+      return translations.get(language);
+    }
+
+    const options = Object.keys(languageNames)
       .sort((first, second) => {
         if (first === "en") return -1;
         if (second === "en") return 1;
@@ -142,13 +151,22 @@ async function main() {
       });
     languagePicker.replaceChildren(...options);
 
-    function render() {
+    async function render() {
+      const version = ++renderVersion;
       const requested = new URL(window.location.href).searchParams.get("lang") ?? "en";
-      const language = languages.get(normalizeLanguage(requested)) ?? "en";
+      let language = languages.get(normalizeLanguage(requested)) ?? "en";
+      let localizedNames;
+      status.hidden = false;
+      try {
+        localizedNames = await loadTranslations(language);
+      } catch (error) {
+        console.warn(`Unable to load ${language}; using English.`, error);
+        language = "en";
+        localizedNames = englishNames;
+      }
+      if (version !== renderVersion) return;
       const locale = language.replaceAll("_", "-");
       const direction = ["ar", "he"].includes(language) ? "rtl" : "ltr";
-      const localizedNames = translations.get(language);
-      const englishNames = translations.get("en");
       const translate = (key) => localizedNames.get(key) || englishNames.get(key) || key;
       const navigation = document.createDocumentFragment();
       const content = document.createDocumentFragment();
@@ -204,7 +222,7 @@ async function main() {
       render();
     });
     window.addEventListener("popstate", render);
-    render();
+    await render();
     languagePicker.disabled = false;
 
     if (window.location.hash) {

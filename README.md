@@ -25,6 +25,7 @@ Table of content:
 | Golden Gate   | Light - portrait  | ![Light](preview_images/11AB4259-C435-4F92-A108-D6B9CC6D2295.png) | [Link](https://sylvan.apple.com/itunes-assets/Aerials116/v4/cb/5b/50/cb5b5035-6701-619f-9065-3d7d0e5fbef4/GG_LM_V_v016_40fps-TSA.mov)  |
 | Golden Gate   | Dark - landscape  | ![Dark](preview_images/C6AECFD2-A365-4504-9E2C-F86343F9421F.png)  | [Link](https://sylvan.apple.com/itunes-assets/Aerials116/v4/cb/5b/50/cb5b5035-6701-619f-9065-3d7d0e5fbef4/GG_DM_H_v062_240fps-TSA.mov) |
 | Golden Gate   | Dark - portrait   | ![Dark](preview_images/731140AB-82EF-47B5-B62C-285BA7E112FD.png)  | [Link](https://sylvan.apple.com/itunes-assets/Aerials116/v4/cb/5b/50/cb5b5035-6701-619f-9065-3d7d0e5fbef4/GG_DM_V_v016_240fps-TSA.mov) |
+
 ## Landscape
 
 | Subcategory     | Name                        | Preview Image                                                                           | Full Video                                                                                                                                                                                                              |
@@ -112,6 +113,7 @@ Table of content:
 | Greenland       | Greenland Evening           | ![Greenland Evening](preview_images/EE01F02D-1413-436C-AB05-410F224A5B7B.png)           | [Link](https://sylvan.apple.com/itunes-assets/Aerials116/v4/cb/5b/50/cb5b5035-6701-619f-9065-3d7d0e5fbef4/comp_GL_G010_C006_PSNK_NOSUN_v12_SDR_PS_FINAL_20180709_FRC240fps_sdr_4k_qp20_240p_t2160_tsa.mov)              |
 | Greenland       | Greenland Coast             | ![Greenland Coast](preview_images/2F52E34C-39D4-4AB1-9025-8F7141FAA720.png)             | [Link](https://sylvan.apple.com/itunes-assets/Aerials116/v4/cb/5b/50/cb5b5035-6701-619f-9065-3d7d0e5fbef4/comp_GL_G002_C002_PSNK_v03_SDR_PS_20180925_FRC240fps_sdr_4k_qp23_240p_t2160_tsa.mov)                          |
 | Greenland       | Greenland Glacier           | ![Greenland Glacier](preview_images/B8F204CE-6024-49AB-85F9-7CA2F6DCD226.png)           | [Link](https://sylvan.apple.com/itunes-assets/Aerials126/v4/ec/eb/c8/ecebc8d2-5486-c2b2-52ae-6f0ab2d6b65f/comp_GL_G004_C010_PSNK_v04_SDR_PS_FINAL_20180709_240fps_54d7bb68-1b1d-4c05-9cd7-7eefd4de1b28q19_sRGB_tsa.mov) |
+
 ## Cityscape
 
 | Subcategory   | Name                               | Preview Image                                                                                  | Full Video                                                                                                                                                                                                                         |
@@ -146,6 +148,7 @@ Table of content:
 | Dubai         | Dubai Creek                        | ![Dubai Creek](preview_images/3FFA2A97-7D28-49EA-AA39-5BC9051B2745.png)                        | [Link](https://sylvan.apple.com/itunes-assets/Aerials116/v4/cb/5b/50/cb5b5035-6701-619f-9065-3d7d0e5fbef4/comp_DB_D001_C005_COMP_PSNK_v12_SDR_PS_20180912_FRC_sdr_4k_qp26_240p_t2160_tsa.mov)                                      |
 | Dubai         | Dubai from Above                   | ![Dubai from Above](preview_images/876D51F4-3D78-4221-8AD2-F9E78C0FD9B9.png)                   | [Link](https://sylvan.apple.com/itunes-assets/Aerials116/v4/cb/5b/50/cb5b5035-6701-619f-9065-3d7d0e5fbef4/comp_DB_D008_C010_PSNK_v21_SDR_PS_20180914_sdr_4k_qp26_240p_t2160_tsa.mov)                                               |
 | Dubai         | Dubai Creek Harbor                 | ![Dubai Creek Harbor](preview_images/E991AC0C-F272-44D8-88F3-05F44EDFE3AE.png)                 | [Link](https://sylvan.apple.com/itunes-assets/Aerials116/v4/cb/5b/50/cb5b5035-6701-619f-9065-3d7d0e5fbef4/comp_DB_D001_C001_PSNK_v06_SDR_PS_20180824_sdr_4k_qp27_240p_t2160_tsa.mov)                                               |
+
 ## Underwater
 
 | Subcategory            | Name                     | Preview Image                                                                        | Full Video                                                                                                                                                                                        |
@@ -171,6 +174,7 @@ Table of content:
 | Cownose Rays           | Cownose Rays             | ![Cownose Rays](preview_images/58C75C62-3290-47B8-849C-56A583173570.png)             | [Link](https://sylvan.apple.com/itunes-assets/Aerials116/v4/cb/5b/50/cb5b5035-6701-619f-9065-3d7d0e5fbef4/MEX_A006_C008_SDR_20190923_FRC_sdr_4k_qp25_240p_t2160_tsa.mov)                          |
 | California Dolphins    | California Dolphin Pod   | ![California Dolphin Pod](preview_images/27A37B0F-738D-4644-A7A4-E33E7A6C1175.png)   | [Link](https://sylvan.apple.com/itunes-assets/Aerials126/v4/ec/eb/c8/ecebc8d2-5486-c2b2-52ae-6f0ab2d6b65f/DL_B002_C011_SDR_20191122_240fps_521bacfa-65b2-4938-92b1-4d069187ddfcq24_sRGB_tsa.mov)  |
 | Red Sea Coral          | Red Sea Coral from Above | ![Red Sea Coral from Above](preview_images/82175C1F-153C-4EC8-AE37-2860EA828004.png) | [Link](https://sylvan.apple.com/itunes-assets/Aerials116/v4/cb/5b/50/cb5b5035-6701-619f-9065-3d7d0e5fbef4/RS_A008_C010_SDR_20191218_FRC_sdr_4k_qp30_240p_t2160_tsa.mov)                           |
+
 ## Earth
 
 | Subcategory                        | Name                         | Preview Image                                                                            | Full Video                                                                                                                                                                                                                                          |
@@ -197,6 +201,7 @@ Table of content:
 | New York Night                     | New York                     | ![New York](preview_images/B1B5DDC5-73C8-4920-8133-BACCE38A08DE.png)                     | [Link](https://sylvan.apple.com/itunes-assets/Aerials116/v4/cb/5b/50/cb5b5035-6701-619f-9065-3d7d0e5fbef4/comp_GMT307_136NC_134K_8277_NY_NIGHT_01_v25_SDR_PS_20180907_FRC240fps_sdr_4k_qp20_240p_t2160_tsa.mov)                                     |
 | Italy to Asia                      | Southern Europe Night        | ![Southern Europe Night](preview_images/E5DB138A-F04E-4619-B896-DE5CB538C534.png)        | [Link](https://sylvan.apple.com/itunes-assets/Aerials116/v4/cb/5b/50/cb5b5035-6701-619f-9065-3d7d0e5fbef4/comp_GMT329_113NC_396B_1105_ITALY_v03_SDR_FINAL_20180706_FRC240fps_sdr_4k_qp21_240p_t2160_tsa.mov)                                        |
 | Iran and Afghanistan               | Middle East                  | ![Middle East](preview_images/F439B0A7-D18C-4B14-9681-6520E6A74FE9.png)                  | [Link](https://sylvan.apple.com/itunes-assets/Aerials116/v4/cb/5b/50/cb5b5035-6701-619f-9065-3d7d0e5fbef4/comp_A083_C002_1130KZ_v04_SDR_PS_FINAL_20180725_240fps_8572bbed-c0af-4af1-b604-d272a4253d3aq13_sRGB_tsa.mov)                              |
+
 ## Mac
 
 | Subcategory   | Name       | Preview Image                                                          | Full Video                                                                                                                                                                              |
