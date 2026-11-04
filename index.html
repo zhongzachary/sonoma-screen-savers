@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <meta name="description" content="Browse previews of macOS wallpapers and open their full videos, with names in your language.">
+    <title>macOS Wallpapers</title>
+    <link rel="stylesheet" href="./site.css">
+    <script type="module" src="./site.js"></script>
+  </head>
+  <body>
+    <main>
+      <header>
+        <div class="language-picker">
+          <label for="language">Language</label>
+          <select id="language" disabled>
+            <option value="en">English</option>
+          </select>
+        </div>
+        <h1>macOS Wallpapers</h1>
+        <p>Click on each preview image to open the full video.</p>
+      </header>
+      <p id="status" role="status">Loading wallpapers…</p>
+      <noscript><p>Enable JavaScript to browse wallpapers and choose a language.</p></noscript>
+      <nav aria-label="Wallpaper categories" hidden>
+        <ul id="categories"></ul>
+      </nav>
+      <div id="gallery"></div>
+      <footer>
+        <p>All photos and videos are owned by Apple Inc. and their respective creators/owners. This gallery helps you explore the wallpapers online. Preview images are stored in this repository; full videos are linked directly from Apple’s servers.</p>
+        <p><a href="https://github.com/zhongzachary/sonoma-screen-savers">View the repository on GitHub</a></p>
+      </footer>
+    </main>
+  </body>
+</html>
