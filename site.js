@@ -95,8 +95,8 @@ function createWallpaper(asset, translate, language) {
     variant.className = "orientation";
     variant.lang = "en";
     variant.dir = "ltr";
-    variant.textContent = ` — ${orientation}`;
-    caption.append(variant);
+    variant.textContent = orientation;
+    caption.append(" ", variant);
   }
 
   const linkHint = document.createElement("span");
@@ -168,21 +168,19 @@ async function main() {
         item.append(link);
         navigation.append(item);
 
-        for (const subcategory of [...category.subcategories].sort(byPreferredOrder)) {
-          const subheading = document.createElement("h3");
-          subheading.textContent = translate(subcategory.localizedNameKey);
-          const wallpapers = document.createElement("div");
-          wallpapers.className = "wallpapers";
+        const wallpapers = document.createElement("div");
+        wallpapers.className = "wallpapers";
 
+        for (const subcategory of [...category.subcategories].sort(byPreferredOrder)) {
           for (const asset of assets) {
             if (asset.categories.includes(category.id) && asset.subcategories.includes(subcategory.id)) {
               wallpapers.append(createWallpaper(asset, translate, locale));
             }
           }
+        }
 
-          if (wallpapers.childElementCount) {
-            section.append(subheading, wallpapers);
-          }
+        if (wallpapers.childElementCount) {
+          section.append(wallpapers);
         }
 
         content.append(section);
