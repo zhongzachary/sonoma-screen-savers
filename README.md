@@ -1,6 +1,7 @@
 # macOS Wallpapers
 
-See all wallpapers in a website, showing asset names in your own language: [https://zhongzachary.github.io/sonoma-screen-savers/](https://zhongzachary.github.io/sonoma-screen-savers/)
+> [!TIP]
+> See all wallpapers in a website, showing asset names in your own language: [https://zhongzachary.github.io/sonoma-screen-savers/](https://zhongzachary.github.io/sonoma-screen-savers/)
 
 Here is a list of the aerial wallpapers from macOS Sonoma to macOS Golden Gate.
 
