@@ -57,7 +57,7 @@ def summarize_assets_for_markdown(lang: str) -> duckdb.DuckDBPyRelation:
     assets = entries.query(
         "entries",
         """
-        SELECT asset.*
+        SELECT asset.* replace(upper(cast(asset.id as string)) as id)
         FROM (
             SELECT unnest(assets) AS asset
             FROM entries
@@ -190,7 +190,7 @@ def save_screen_savers_url_as_markdown(table: duckdb.DuckDBPyRelation):
                 (
                     subcategory,
                     name + (f" - {orientation}" if orientation else ""),
-                    f"![{name}](preview_images/{asset_id}.png)",
+                    f"![{name}](preview_images/{asset_id.upper()}.png)",
                     f"[Link]({full_video})",
                 )
                 for asset_id, name, subcategory, full_video, orientation in table.filter(
